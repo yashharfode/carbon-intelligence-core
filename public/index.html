@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carbon Footprint Awareness Platform</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter for modern, premium typography -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* Strict Solid Dark Theme (WCAG AAA Contrast Compliant) */
+    :root {
+      --bg-base: #121212;
+      --bg-surface: #1E1E1E;
+      --bg-input: #2A2A2A;
+      --border-color: #333333;
+      --accent-forest: #2d6a4f;
+      --accent-forest-hover: #1b4332;
+      --text-main: #fefae0;
+      --text-muted: #b0b0b0; /* Increased lightness for contrast > 7:1 against #1E1E1E */
+    }
+
+    body {
+      background-color: var(--bg-base);
+      color: var(--text-main);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    .solid-panel {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+    }
+
+    .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      background: var(--accent-forest);
+      color: var(--text-main);
+      padding: 12px 24px;
+      z-index: 100;
+      transition: top 0.3s ease;
+      font-weight: 600;
+    }
+
+    .skip-link:focus {
+      top: 0;
+      outline: 2px solid white;
+    }
+
+    /* SVG Animation - Lightweight */
+    .living-world svg {
+      width: 100%;
+      max-width: 350px;
+      height: auto;
+      transition: all 0.8s ease-in-out;
+    }
+    
+    .thriving .tree-canopy {
+      fill: var(--accent-forest);
+      transition: fill 0.8s ease-in-out;
+    }
+    .thriving .tree-trunk {
+      fill: #8b5a2b;
+      transition: fill 0.8s ease-in-out;
+    }
+    .thriving .ground {
+      fill: #1b3827;
+      transition: fill 0.8s ease-in-out;
+    }
+
+    .degrading .tree-canopy {
+      fill: #555555;
+      transition: fill 0.8s ease-in-out;
+    }
+    .degrading .tree-trunk {
+      fill: #404040;
+      transition: fill 0.8s ease-in-out;
+    }
+    .degrading .ground {
+      fill: #222222;
+      transition: fill 0.8s ease-in-out;
+    }
+
+    /* Form Styles */
+    .input-field {
+      background-color: var(--bg-input);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .input-field:focus {
+      border-color: var(--accent-forest);
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(45, 106, 79, 0.4);
+    }
+    
+    .btn-submit {
+      background-color: var(--accent-forest);
+      transition: background-color 0.2s ease, transform 0.1s ease;
+    }
+    .btn-submit:hover:not(:disabled), .btn-submit:focus:not(:disabled) {
+      background-color: var(--accent-forest-hover);
+    }
+    .btn-submit:active:not(:disabled) {
+      transform: scale(0.98);
+    }
+    .btn-submit:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* Toast Notification */
+    #toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .toast {
+      min-width: 300px;
+      background-color: var(--bg-surface);
+      border-left: 4px solid var(--accent-forest);
+      color: var(--text-main);
+      padding: 16px;
+      border-radius: 4px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      opacity: 0;
+      transform: translateX(100%);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    .toast.toast-error {
+      border-left-color: #e63946;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    /* Spinner */
+    .loader {
+      border: 3px solid var(--border-color);
+      border-top: 3px solid var(--text-main);
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+  </style>
+</head>
+<body class="flex flex-col items-center py-12 px-6">
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <header class="mb-12 text-center max-w-2xl">
+    <h1 class="text-4xl md:text-5xl font-bold mb-4 tracking-tight">Carbon Footprint Awareness</h1>
+    <p class="text-lg md:text-xl text-[var(--text-muted)] font-medium">Track your impact. Make conscious choices.</p>
+  </header>
+
+  <main id="main-content" class="w-full max-w-5xl flex flex-col lg:flex-row gap-8">
+    
+    <!-- Form Section -->
+    <section class="flex-1 solid-panel p-8 rounded-lg" aria-labelledby="form-heading">
+      <h2 id="form-heading" class="text-2xl font-semibold mb-6 tracking-wide">Log Activity</h2>
+      
+      <form id="activity-form" class="space-y-5">
+        <div>
+          <label for="activityType" class="block mb-2 text-sm font-semibold text-[var(--text-muted)]">Activity Type</label>
+          <select id="activityType" name="activityType" required class="input-field w-full p-3.5 rounded appearance-none" aria-required="true">
+            <option value="" disabled selected>Select an activity...</option>
+            <option value="Driving a petrol car">Driving a petrol car</option>
+            <option value="Taking a bus">Taking a bus</option>
+            <option value="Eating a beef burger">Eating a beef burger</option>
+            <option value="Running AC">Running AC</option>
+            <option value="Cycling">Cycling</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="duration" class="block mb-2 text-sm font-semibold text-[var(--text-muted)]">Duration (minutes)</label>
+          <input type="number" id="duration" name="duration" min="0" class="input-field w-full p-3.5 rounded" placeholder="e.g., 30" aria-label="Duration in minutes">
+        </div>
+
+        <div class="flex gap-5">
+          <div class="flex-1">
+            <label for="distance" class="block mb-2 text-sm font-semibold text-[var(--text-muted)]">Distance</label>
+            <input type="number" id="distance" name="distance" min="0" class="input-field w-full p-3.5 rounded" placeholder="e.g., 10" aria-label="Distance">
+          </div>
+          <div class="w-1/3">
+            <label for="unit" class="block mb-2 text-sm font-semibold text-[var(--text-muted)]">Unit</label>
+            <select id="unit" name="unit" class="input-field w-full p-3.5 rounded appearance-none" aria-label="Unit of distance">
+              <option value="km">km</option>
+              <option value="miles">miles</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-submit w-full py-4 rounded font-semibold text-lg mt-8 flex items-center justify-center" aria-label="Calculate Footprint">
+          <span class="btn-text">Calculate Impact</span>
+        </button>
+      </form>
+    </section>
+
+    <!-- Results & Living World Section -->
+    <section class="flex-1 flex flex-col gap-8" aria-labelledby="results-heading">
+      <div id="results-card" class="solid-panel p-8 rounded-lg hidden opacity-0 transition-opacity duration-300 ease-in-out" aria-live="polite">
+        <h2 id="results-heading" class="text-sm font-bold mb-4 text-[var(--text-muted)] uppercase tracking-widest">Your Impact Assessment</h2>
+        <div class="mb-6 flex items-baseline gap-2">
+          <span id="co2-value" class="text-5xl font-bold tracking-tight"></span> 
+          <span class="text-xl font-medium text-[var(--text-muted)]">kg CO₂</span>
+        </div>
+        <div class="bg-[var(--bg-input)] p-5 rounded border border-[var(--border-color)]">
+          <p id="contextual-nudge" class="italic text-lg leading-relaxed text-[var(--text-main)]"></p>
+        </div>
+      </div>
+
+      <div class="living-world flex-1 solid-panel p-8 rounded-lg flex items-center justify-center thriving" aria-label="Visual representation of environmental impact">
+        <!-- High-quality Lightweight Inline SVG -->
+        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A stylized tree representing the environment">
+          <!-- Ground -->
+          <ellipse class="ground" cx="100" cy="175" rx="85" ry="15" />
+          
+          <!-- Tree Trunk -->
+          <path class="tree-trunk" d="M90 175 C92 120, 95 90, 100 80 C105 90, 108 120, 110 175 Z" />
+          
+          <!-- Tree Canopy -->
+          <circle class="tree-canopy" cx="100" cy="75" r="45" />
+          <circle class="tree-canopy" cx="65" cy="105" r="35" />
+          <circle class="tree-canopy" cx="135" cy="105" r="35" />
+          <circle class="tree-canopy" cx="80" cy="45" r="30" />
+          <circle class="tree-canopy" cx="120" cy="45" r="30" />
+        </svg>
+      </div>
+    </section>
+  </main>
+
+  <!-- Toast Container -->
+  <div id="toast-container" aria-live="assertive"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
