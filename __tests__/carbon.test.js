@@ -68,3 +68,24 @@ describe('POST /api/carbon', () => {
     expect(res.body).toHaveProperty('raw_co2_kg', 2.5);
   });
 });
+
+describe('POST /api/carbon/coach', () => {
+  it('should return a 400 error if message is missing or invalid', async () => {
+    const res = await request(app)
+      .post('/api/carbon/coach')
+      .send({});
+    
+    expect(res.statusCode).toEqual(400);
+    expect(res.body).toHaveProperty('error');
+  });
+
+  it('should return a 200 response with coaching advice when valid message is sent', async () => {
+    const res = await request(app)
+      .post('/api/carbon/coach')
+      .send({ message: 'I travel 10km daily by bike' });
+
+    expect(res.statusCode).toEqual(200);
+    expect(res.body).toHaveProperty('response');
+    expect(typeof res.body.response).toBe('string');
+  });
+});

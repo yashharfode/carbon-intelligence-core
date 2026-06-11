@@ -3,21 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Carbon Footprint Awareness Platform</title>
+  <title>Carbon Reduction Ecosystem 2.0</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Google Fonts: Inter for modern, premium typography -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Google Fonts: Inter for premium typography -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Canvas Confetti CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
   <style>
-    /* Strict Solid Dark Theme (WCAG AAA Contrast Compliant) */
     :root {
-      --bg-base: #121212;
-      --bg-surface: #1E1E1E;
-      --bg-input: #2A2A2A;
-      --border-color: #333333;
-      --accent-forest: #2d6a4f;
-      --accent-forest-hover: #1b4332;
-      --text-main: #fefae0;
-      --text-muted: #b0b0b0; /* Increased lightness for contrast > 7:1 against #1E1E1E */
+      --bg-base: #0B0B0B;
+      --bg-glass: rgba(21, 21, 21, 0.7);
+      --border-glass: rgba(255, 255, 255, 0.08);
+      --primary-emerald: #10b981;
+      --accent-lime: #84cc16;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --success: #22c55e;
+      --warning: #f59e0b;
     }
 
     body {
@@ -26,19 +30,29 @@
       font-family: 'Inter', sans-serif;
       min-height: 100vh;
       margin: 0;
+      overflow-x: hidden;
     }
 
-    .solid-panel {
-      background-color: var(--bg-surface);
-      border: 1px solid var(--border-color);
+    /* Glassmorphism Styles */
+    .glass-card {
+      background-color: var(--bg-glass);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--border-glass);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .glass-card:hover {
+      border-color: rgba(16, 185, 129, 0.3);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
     }
 
     .skip-link {
       position: absolute;
       top: -40px;
       left: 0;
-      background: var(--accent-forest);
-      color: var(--text-main);
+      background: var(--primary-emerald);
+      color: white;
       padding: 12px 24px;
       z-index: 100;
       transition: top 0.3s ease;
@@ -50,289 +64,415 @@
       outline: 2px solid white;
     }
 
-    /* SVG Animation - Lightweight */
-    .living-world svg {
-      width: 100%;
-      max-width: 300px;
-      height: auto;
-      transition: all 0.8s ease-in-out;
+    /* Card selected glow */
+    .activity-card {
+      cursor: pointer;
+      border: 1px solid var(--border-glass);
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    
-    .thriving .tree-canopy {
-      fill: var(--accent-forest);
-      transition: fill 0.8s ease-in-out;
+    .activity-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(16, 185, 129, 0.4);
     }
-    .thriving .tree-trunk {
-      fill: #8b5a2b;
-      transition: fill 0.8s ease-in-out;
-    }
-    .thriving .ground {
-      fill: #1b3827;
-      transition: fill 0.8s ease-in-out;
+    .activity-card.selected {
+      border-color: var(--primary-emerald);
+      background-color: rgba(16, 185, 129, 0.15);
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.25);
     }
 
-    .degrading .tree-canopy {
-      fill: #555555;
-      transition: fill 0.8s ease-in-out;
+    /* Heatmap Grid */
+    .grid-cols-15 {
+      display: grid;
+      grid-template-columns: repeat(15, minmax(0, 1fr));
     }
-    .degrading .tree-trunk {
-      fill: #404040;
-      transition: fill 0.8s ease-in-out;
-    }
-    .degrading .ground {
-      fill: #222222;
-      transition: fill 0.8s ease-in-out;
+    .heatmap-cell {
+      aspect-ratio: 1;
+      border-radius: 2px;
+      transition: background-color 0.3s ease;
     }
 
-    /* Form Styles */
-    .input-field {
-      background-color: var(--bg-input);
-      border: 1px solid var(--border-color);
-      color: var(--text-main);
-      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
     }
-    .input-field:focus {
-      border-color: var(--accent-forest);
-      outline: none;
-      box-shadow: 0 0 0 2px rgba(45, 106, 79, 0.4);
+    ::-webkit-scrollbar-track {
+      background: #0B0B0B;
     }
-    
-    .btn-submit {
-      background-color: var(--accent-forest);
-      transition: background-color 0.2s ease, transform 0.1s ease;
+    ::-webkit-scrollbar-thumb {
+      background: #222;
+      border-radius: 3px;
     }
-    .btn-submit:hover:not(:disabled), .btn-submit:focus:not(:disabled) {
-      background-color: var(--accent-forest-hover);
-    }
-    .btn-submit:active:not(:disabled) {
-      transform: scale(0.98);
-    }
-    .btn-submit:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--primary-emerald);
     }
 
-    /* Toast Notification */
-    #toast-container {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      z-index: 50;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+    /* Floating Ecosystem Particles */
+    @keyframes floatUp {
+      0% { transform: translateY(10px) rotate(0deg); opacity: 0; }
+      50% { opacity: 0.8; }
+      100% { transform: translateY(-50px) rotate(360deg); opacity: 0; }
     }
-    .toast {
-      min-width: 300px;
-      background-color: var(--bg-surface);
-      border-left: 4px solid var(--accent-forest);
-      color: var(--text-main);
-      padding: 16px;
-      border-radius: 4px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-      opacity: 0;
-      transform: translateX(100%);
-      transition: opacity 0.3s ease, transform 0.3s ease;
-    }
-    .toast.toast-error {
-      border-left-color: #e63946;
-    }
-    .toast.show {
-      opacity: 1;
-      transform: translateX(0);
+    .particle {
+      position: absolute;
+      pointer-events: none;
+      animation: floatUp 4s ease-in-out infinite;
     }
 
-    /* Spinner */
-    .loader {
-      border: 3px solid var(--border-color);
-      border-top: 3px solid var(--text-main);
-      border-radius: 50%;
-      width: 20px;
-      height: 20px;
-      animation: spin 1s linear infinite;
-      display: inline-block;
-      vertical-align: middle;
-      margin-right: 8px;
+    /* Leaderboard Podium */
+    .podium-1 {
+      border: 2px solid #fbbf24; /* Gold */
+      box-shadow: 0 0 15px rgba(251, 191, 36, 0.2);
     }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-    /* Badge Lock State Styling */
-    .badge-card {
-      background-color: var(--bg-input);
-      border: 1px solid var(--border-color);
-      transition: all 0.3s ease;
+    .podium-2 {
+      border: 2px solid #9ca3af; /* Silver */
+      box-shadow: 0 0 15px rgba(156, 163, 175, 0.25);
     }
-    .badge-card.locked {
-      opacity: 0.4;
-      filter: grayscale(1);
-    }
-    .badge-card.unlocked {
-      border-color: var(--accent-forest);
-      box-shadow: 0 0 10px rgba(45, 106, 79, 0.2);
+    .podium-3 {
+      border: 2px solid #b45309; /* Bronze */
+      box-shadow: 0 0 15px rgba(180, 83, 9, 0.25);
     }
   </style>
 </head>
-<body class="flex flex-col items-center py-12 px-6">
+<body class="py-8 px-4 md:px-8">
   <a href="#main-content" class="skip-link">Skip to main content</a>
 
-  <header class="mb-12 text-center max-w-2xl">
-    <h1 class="text-4xl md:text-5xl font-bold mb-4 tracking-tight">Carbon Footprint Platform</h1>
-    <p class="text-lg md:text-xl text-[var(--text-muted)] font-medium">Empowering sustainable changes through AI and community insights.</p>
+  <!-- Top Navigation & Header -->
+  <header class="max-w-7xl mx-auto mb-8 flex flex-col md:flex-row items-center justify-between gap-4">
+    <div>
+      <h1 class="text-3xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-lime-400">
+        Carbon Reduction Ecosystem 2.0
+      </h1>
+      <p class="text-sm text-gray-400 mt-1">Duolingo for Sustainability. Watch your virtual environment thrive as you save carbon.</p>
+    </div>
+    
+    <!-- Community Forest Milestones -->
+    <div class="glass-card px-5 py-3 rounded-xl flex items-center gap-4 text-xs">
+      <div>
+        <span class="text-gray-400 block uppercase tracking-wider text-[10px] font-bold">Community Forest</span>
+        <span class="font-bold text-emerald-400" id="community-trees">🌳 1,240 Trees Planted</span>
+      </div>
+      <div class="border-l border-white/10 pl-4">
+        <span class="text-gray-400 block uppercase tracking-wider text-[10px] font-bold">Community CO₂ Saved</span>
+        <span class="font-bold text-lime-400" id="community-saved">🌍 4,821 kg</span>
+      </div>
+    </div>
   </header>
 
-  <main id="main-content" class="w-full max-w-5xl flex flex-col lg:flex-row gap-8">
+  <!-- Hero Impact Dashboard Stats -->
+  <section class="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-6 gap-4 mb-8" aria-label="Hero Impact Dashboard">
+    <div class="glass-card p-4 rounded-2xl flex flex-col justify-between">
+      <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">CO₂ Saved</span>
+      <div class="mt-2 flex items-baseline gap-1">
+        <span id="co2-saved" class="text-2xl font-extrabold text-emerald-400">0</span>
+        <span class="text-xs text-gray-500 font-bold">kg</span>
+      </div>
+    </div>
+    <div class="glass-card p-4 rounded-2xl flex flex-col justify-between">
+      <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Trees Equivalent</span>
+      <div class="mt-2 flex items-baseline gap-1">
+        <span id="trees-planted" class="text-2xl font-extrabold text-lime-400">0.0</span>
+        <span class="text-xs text-gray-500 font-bold">Trees</span>
+      </div>
+    </div>
+    <div class="glass-card p-4 rounded-2xl flex flex-col justify-between">
+      <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Green Streak</span>
+      <div class="mt-2 flex items-baseline gap-1">
+        <span id="streak-count" class="text-2xl font-extrabold text-amber-500">0</span>
+        <span class="text-xs text-gray-500 font-bold">Days 🔥</span>
+      </div>
+    </div>
+    <div class="glass-card p-4 rounded-2xl flex flex-col justify-between">
+      <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Community Rank</span>
+      <div class="mt-2 flex items-baseline gap-1">
+        <span id="community-rank" class="text-2xl font-extrabold text-blue-400">#4</span>
+        <span class="text-xs text-gray-500 font-bold">Rank</span>
+      </div>
+    </div>
+    <div class="glass-card p-4 rounded-2xl col-span-2 flex flex-col justify-between">
+      <div class="flex items-center justify-between text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+        <span>Level & Progress</span>
+        <span id="eco-level" class="text-emerald-400 font-bold">Lvl 1 - Eco Beginner</span>
+      </div>
+      <div class="mt-3">
+        <div class="flex justify-between text-[10px] text-gray-400 mb-1">
+          <span id="xp-text">0 / 100 XP</span>
+          <span id="weekly-progress-percentage">0% to Level Up</span>
+        </div>
+        <div class="w-full bg-white/10 h-2 rounded-full overflow-hidden">
+          <div id="weekly-progress-bar" class="bg-gradient-to-r from-emerald-500 to-lime-400 h-full rounded-full transition-all duration-500" style="width: 0%;"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content Grid -->
+  <main id="main-content" class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
     
-    <!-- Left Column: Form, Badges, Leaderboard -->
-    <div class="flex-1 flex flex-col gap-8">
+    <!-- LEFT COLUMN (Span 7) - Logging, AI Coach, and Challenges -->
+    <div class="lg:col-span-7 flex flex-col gap-8">
       
-      <!-- Form Section -->
-      <section class="solid-panel p-8 rounded-lg" aria-labelledby="form-heading">
-        <h2 id="form-heading" class="text-2xl font-semibold mb-6 tracking-wide flex items-center justify-between">
-          <span>Log Activity</span>
+      <!-- Smart Activity Logging Card -->
+      <section class="glass-card p-6 md:p-8 rounded-3xl" aria-labelledby="logging-heading">
+        <div class="flex items-center justify-between mb-6">
+          <h2 id="logging-heading" class="text-xl font-bold tracking-wide">Smart Activity Logger</h2>
           
-          <!-- Voice Assistant Button -->
-          <button type="button" id="mic-btn" class="p-2.5 rounded-full bg-[var(--bg-input)] hover:bg-[var(--border-color)] transition-colors border border-[var(--border-color)] flex items-center justify-center" aria-label="Start Voice Input" title="Voice dictation (e.g. 'Cycling for 30 minutes')">
-            <svg class="w-5 h-5 fill-current text-[var(--text-main)]" id="mic-icon" viewBox="0 0 24 24">
+          <!-- Mic speech engine -->
+          <button type="button" id="mic-btn" class="p-2.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-gray-400 hover:text-emerald-400 transition-colors flex items-center justify-center" aria-label="Start Voice Input" title="Click to dictate activity (e.g. 'Cycling 5 km')">
+            <svg class="w-5 h-5 fill-current" id="mic-icon" viewBox="0 0 24 24">
               <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/>
             </svg>
           </button>
+        </div>
+
+        <p id="voice-status" class="text-xs text-emerald-400 bg-emerald-500/10 p-2.5 rounded-xl mb-6 text-center hidden" aria-live="polite">
+          Listening... E.g. "I ran the AC for two hours" or "drove petrol car for ten km".
+        </p>
+
+        <!-- 8 Selectable Activity Grid -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6" id="activity-cards-grid">
+          <div class="activity-card glass-card p-3.5 rounded-xl flex flex-col items-center text-center" data-activity="Cycling">
+            <span class="text-2xl mb-1">🚴</span>
+            <span class="text-xs font-semibold">Cycling</span>
+            <span class="text-[9px] text-gray-500 mt-1">-100% CO₂</span>
+          </div>
+          <div class="activity-card glass-card p-3.5 rounded-xl flex flex-col items-center text-center" data-activity="Walking">
+            <span class="text-2xl mb-1">🚶</span>
+            <span class="text-xs font-semibold">Walking</span>
+            <span class="text-[9px] text-gray-500 mt-1">-100% CO₂</span>
+          </div>
+          <div class="activity-card glass-card p-3.5 rounded-xl flex flex-col items-center text-center" data-activity="Taking a bus">
+            <span class="text-2xl mb-1">🚌</span>
+            <span class="text-xs font-semibold">Bus Transit</span>
+            <span class="text-[9px] text-gray-500 mt-1">Low CO₂</span>
+          </div>
+          <div class="activity-card glass-card p-3.5 rounded-xl flex flex-col items-center text-center" data-activity="Driving a petrol car">
+            <span class="text-2xl mb-1">🚗</span>
+            <span class="text-xs font-semibold">Petrol Car</span>
+            <span class="text-[9px] text-gray-500 mt-1">High CO₂</span>
+          </div>
+          <div class="activity-card glass-card p-3.5 rounded-xl flex flex-col items-center text-center" data-activity="Running AC">
+            <span class="text-2xl mb-1">⚡</span>
+            <span class="text-xs font-semibold">Running AC</span>
+            <span class="text-[9px] text-gray-500 mt-1">High Energy</span>
+          </div>
+          <div class="activity-card glass-card p-3.5 rounded-xl flex flex-col items-center text-center" data-activity="Eating a beef burger">
+            <span class="text-2xl mb-1">🍔</span>
+            <span class="text-xs font-semibold">Beef Burger</span>
+            <span class="text-[9px] text-gray-500 mt-1">High Food CO₂</span>
+          </div>
+          <!-- Additional 2 Activities for Ecosystem 2.0 -->
+          <div class="activity-card glass-card p-3.5 rounded-xl flex flex-col items-center text-center" data-activity="Home Energy">
+            <span class="text-2xl mb-1">🏠</span>
+            <span class="text-xs font-semibold">Home Energy</span>
+            <span class="text-[9px] text-gray-500 mt-1">Gas/Heating</span>
+          </div>
+          <div class="activity-card glass-card p-3.5 rounded-xl flex flex-col items-center text-center" data-activity="Water Usage">
+            <span class="text-2xl mb-1">💧</span>
+            <span class="text-xs font-semibold">Water Usage</span>
+            <span class="text-[9px] text-gray-500 mt-1">Shower/Tap</span>
+          </div>
+        </div>
+
+        <!-- Hidden inputs form that expands on card select -->
+        <form id="activity-form" class="space-y-4">
+          <!-- Actual hidden select for form submission -->
+          <select id="activityType" name="activityType" required class="hidden">
+            <option value="" disabled selected>Select activity...</option>
+            <option value="Driving a petrol car">Driving a petrol car</option>
+            <option value="Taking a bus">Taking a bus</option>
+            <option value="Eating a beef burger">Eating a beef burger</option>
+            <option value="Running AC">Running AC</option>
+            <option value="Cycling">Cycling</option>
+            <option value="Walking">Walking</option>
+            <option value="Home Energy">Home Energy</option>
+            <option value="Water Usage">Water Usage</option>
+          </select>
+
+          <!-- Input Panel (Fades/Slides in once activity is selected) -->
+          <div id="details-panel" class="hidden transition-all duration-300 border border-white/5 bg-white/[0.02] p-5 rounded-2xl">
+            <h3 class="text-sm font-bold text-gray-400 mb-4 uppercase tracking-widest" id="selected-activity-label">Configure Activity</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label for="duration" class="block mb-2 text-xs font-bold text-gray-400 uppercase tracking-wider">Duration (mins)</label>
+                <input type="number" id="duration" name="duration" min="0" class="input-field w-full p-3 rounded-lg text-sm" placeholder="e.g. 30">
+              </div>
+              <div class="flex gap-2 col-span-2">
+                <div class="flex-1">
+                  <label for="distance" class="block mb-2 text-xs font-bold text-gray-400 uppercase tracking-wider">Distance</label>
+                  <input type="number" id="distance" name="distance" min="0" class="input-field w-full p-3 rounded-lg text-sm" placeholder="e.g. 10">
+                </div>
+                <div class="w-24">
+                  <label for="unit" class="block mb-2 text-xs font-bold text-gray-400 uppercase tracking-wider">Unit</label>
+                  <select id="unit" name="unit" class="input-field w-full p-3 rounded-lg text-sm appearance-none">
+                    <option value="km">km</option>
+                    <option value="miles">miles</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            
+            <button type="submit" class="btn-submit w-full py-3.5 rounded-xl font-bold mt-5 flex items-center justify-center text-sm tracking-wide text-white uppercase" aria-label="Calculate Footprint">
+              <span class="btn-text">Log Eco Action & Recalculate</span>
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- AI Carbon Coach Widget -->
+      <section class="glass-card p-6 rounded-3xl" aria-labelledby="coach-heading">
+        <h2 id="coach-heading" class="text-lg font-bold mb-4 tracking-wide flex items-center gap-2">
+          <span>🤖 AI Carbon Coach</span>
+          <span class="text-[10px] uppercase font-extrabold bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/20">Live Assistant</span>
         </h2>
         
-        <!-- Speech Status Hint -->
-        <p id="voice-status" class="text-xs text-[var(--text-muted)] bg-[var(--bg-input)] p-2 rounded mb-5 text-center hidden" aria-live="polite">
-          Listening... Say something like "Driving petrol car for 10 kilometers in 20 minutes".
-        </p>
-        
-        <form id="activity-form" class="space-y-5">
-          <div>
-            <label for="activityType" class="block mb-2 text-sm font-semibold text-[var(--text-muted)]">Activity Type</label>
-            <select id="activityType" name="activityType" required class="input-field w-full p-3.5 rounded appearance-none" aria-required="true">
-              <option value="" disabled selected>Select an activity...</option>
-              <option value="Driving a petrol car">Driving a petrol car</option>
-              <option value="Taking a bus">Taking a bus</option>
-              <option value="Eating a beef burger">Eating a beef burger</option>
-              <option value="Running AC">Running AC</option>
-              <option value="Cycling">Cycling</option>
-            </select>
+        <!-- Conversation Window -->
+        <div id="coach-messages" class="h-60 overflow-y-auto mb-4 border border-white/5 bg-black/30 p-4 rounded-2xl flex flex-col gap-3.5 text-sm">
+          <div class="self-start bg-white/[0.04] text-gray-300 max-w-[85%] p-3.5 rounded-2xl rounded-tl-none leading-relaxed">
+            Hello! I am your <strong>AI Sustainability Coach</strong>. Tell me about your routine or ask how you can reduce emissions. E.g., <em>"I drive 10km every day to office."</em>
           </div>
+        </div>
 
-          <div>
-            <label for="duration" class="block mb-2 text-sm font-semibold text-[var(--text-muted)]">Duration (minutes)</label>
-            <input type="number" id="duration" name="duration" min="0" class="input-field w-full p-3.5 rounded" placeholder="e.g., 30" aria-label="Duration in minutes">
-          </div>
-
-          <div class="flex gap-5">
-            <div class="flex-1">
-              <label for="distance" class="block mb-2 text-sm font-semibold text-[var(--text-muted)]">Distance</label>
-              <input type="number" id="distance" name="distance" min="0" class="input-field w-full p-3.5 rounded" placeholder="e.g., 10" aria-label="Distance">
-            </div>
-            <div class="w-1/3">
-              <label for="unit" class="block mb-2 text-sm font-semibold text-[var(--text-muted)]">Unit</label>
-              <select id="unit" name="unit" class="input-field w-full p-3.5 rounded appearance-none" aria-label="Unit of distance">
-                <option value="km">km</option>
-                <option value="miles">miles</option>
-              </select>
-            </div>
-          </div>
-
-          <button type="submit" class="btn-submit w-full py-4 rounded font-semibold text-lg mt-8 flex items-center justify-center" aria-label="Calculate Footprint">
-            <span class="btn-text">Calculate Impact</span>
+        <form id="coach-form" class="flex gap-2">
+          <input type="text" id="coach-input" class="input-field flex-1 p-3.5 rounded-xl text-sm" placeholder="Ask your coach for advice, challenge plans, or swaps..." required>
+          <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold px-5 rounded-xl transition-all flex items-center justify-center" aria-label="Send Message">
+            <svg class="w-4 h-4 fill-current rotate-90" viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
           </button>
         </form>
       </section>
 
-      <!-- Badges Section -->
-      <section class="solid-panel p-8 rounded-lg" aria-labelledby="badges-heading">
-        <h3 id="badges-heading" class="text-xl font-semibold mb-5 tracking-wide">Achievements & Badges</h3>
-        <div id="badges-grid" class="grid grid-cols-2 gap-4">
-          <!-- Dynamically filled badges -->
+      <!-- Daily Green Challenges & Recommendation Engine -->
+      <section class="grid grid-cols-1 md:grid-cols-2 gap-8" aria-label="Challenges and AI Recommendations">
+        
+        <!-- Daily Rotating Challenges -->
+        <div class="glass-card p-6 rounded-3xl flex flex-col justify-between">
+          <div>
+            <h3 class="text-base font-bold mb-4 flex items-center gap-2">
+              <span>🌱 Eco Challenges</span>
+              <span class="text-[9px] bg-amber-500/10 text-amber-400 px-2 py-0.5 rounded font-extrabold border border-amber-500/20">Daily Rotating</span>
+            </h3>
+            <div class="space-y-3" id="challenges-list">
+              <!-- Dynamically populated challenges -->
+            </div>
+          </div>
         </div>
-      </section>
 
-      <!-- Community Leaderboard -->
-      <section class="solid-panel p-8 rounded-lg" aria-labelledby="leaderboard-heading">
-        <h3 id="leaderboard-heading" class="text-xl font-semibold mb-5 tracking-wide">Community Impact Leaderboard</h3>
-        <div id="leaderboard-list" class="space-y-3.5">
-          <!-- Dynamic Leaderboard list -->
+        <!-- AI Recommendation Engine Swaps -->
+        <div class="glass-card p-6 rounded-3xl">
+          <h3 class="text-base font-bold mb-4 flex items-center gap-2">
+            <span>💡 AI Habits Engine</span>
+            <span class="text-[9px] bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded font-extrabold border border-blue-500/20">Actionable Swaps</span>
+          </h3>
+          <div class="space-y-4" id="recommendations-list">
+            <!-- Dynamic recommendation list -->
+          </div>
         </div>
       </section>
     </div>
 
-    <!-- Right Column: Status Card, Results Card, SVG World -->
-    <div class="flex-1 flex flex-col gap-8">
+    <!-- RIGHT COLUMN (Span 5) - Ecosystem growth, Carbon analytics, Leaderboard -->
+    <div class="lg:col-span-5 flex flex-col gap-8">
       
-      <!-- Gamification Dashboard Status -->
-      <section class="solid-panel p-6 rounded-lg flex items-center justify-between" aria-label="Points and Streak overview">
-        <div>
-          <h2 class="text-xs font-bold text-[var(--text-muted)] uppercase tracking-widest mb-1.5">Eco Dashboard</h2>
-          <div class="flex items-center gap-6 mt-3">
-            <div>
-              <span class="text-xs text-[var(--text-muted)] block">Eco-Score</span>
-              <span id="eco-score" class="text-3xl font-bold text-[var(--text-main)]">100</span>
-            </div>
-            <div class="border-l border-[var(--border-color)] pl-6">
-              <span class="text-xs text-[var(--text-muted)] block">Green Streak</span>
-              <span id="streak-count" class="text-3xl font-bold text-[var(--text-main)] flex items-center gap-1.5">
-                0 <span class="text-xl" aria-hidden="true">🌿</span>
-              </span>
-            </div>
-          </div>
+      <!-- Ecosystem growth visualization (WOW Feature) -->
+      <section class="glass-card p-6 md:p-8 rounded-3xl text-center relative overflow-hidden flex flex-col items-center" aria-labelledby="ecosystem-heading">
+        <h2 id="ecosystem-heading" class="text-sm font-bold uppercase tracking-widest text-gray-400 mb-2">Ecosystem Growth State</h2>
+        <span class="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-xs font-bold text-emerald-400 mb-6" id="growth-stage-title">Seed Stage 🌱</span>
+
+        <!-- SVG Visualizer -->
+        <div class="relative w-full aspect-square flex items-center justify-center bg-black/20 rounded-2xl border border-white/5 p-4" id="ecosystem-container">
+          <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="w-full max-w-[260px] h-auto transition-all duration-700" id="ecosystem-svg">
+            <!-- Ground -->
+            <ellipse class="ground fill-emerald-950/40" cx="100" cy="180" rx="80" ry="12" />
+            <!-- Dynamic Tree Stage elements inserted here via JS -->
+          </svg>
         </div>
-        
-        <div class="text-right">
-          <span class="text-xs text-[var(--text-muted)] block mb-1 font-medium">Rank Title</span>
-          <span id="active-title" class="px-2.5 py-1 rounded bg-[var(--accent-forest)] text-xs font-bold text-[var(--text-main)]">Carbon Novice</span>
+
+        <!-- Growth Milestones progress -->
+        <div class="w-full mt-6 text-left">
+          <div class="flex justify-between text-[10px] text-gray-400 font-bold mb-1">
+            <span>Ecosystem Score</span>
+            <span id="ecosystem-points">0 pts</span>
+          </div>
+          <div class="w-full bg-white/5 h-2 rounded-full overflow-hidden">
+            <div id="ecosystem-progress-bar" class="bg-emerald-500 h-full rounded-full transition-all duration-500" style="width: 0%;"></div>
+          </div>
+          <span class="text-[10px] text-gray-500 block mt-2 text-center" id="next-stage-hint">Unlock Plant Stage at 100 XP</span>
         </div>
       </section>
 
-      <!-- Results Assessment Card -->
-      <section id="results-card" class="solid-panel p-8 rounded-lg hidden opacity-0 transition-opacity duration-300 ease-in-out" aria-live="polite">
+      <!-- Carbon Assessment Panel (Visible on Log) -->
+      <section id="results-card" class="glass-card p-6 rounded-3xl hidden opacity-0 transition-opacity duration-300 ease-in-out" aria-live="polite">
         <div class="flex items-center justify-between mb-4">
-          <h2 id="results-heading" class="text-sm font-bold text-[var(--text-muted)] uppercase tracking-widest">Your Impact Assessment</h2>
+          <h2 class="text-xs font-bold text-gray-400 uppercase tracking-widest">Calculated Impact Assessment</h2>
           
-          <!-- Text to Speech Trigger -->
-          <button type="button" id="speak-btn" class="p-2 rounded hover:bg-[var(--bg-input)] transition-colors border border-[var(--border-color)]" aria-label="Listen to assessment text" title="Read assessment aloud">
-            <svg class="w-5 h-5 fill-current text-[var(--accent-forest)]" viewBox="0 0 24 24">
+          <button type="button" id="speak-btn" class="p-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/5 text-emerald-400" aria-label="Listen to nudge text" title="Read nudge aloud">
+            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
               <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
             </svg>
           </button>
         </div>
-        
-        <div class="mb-6 flex items-baseline gap-2">
-          <span id="co2-value" class="text-5xl font-bold tracking-tight"></span> 
-          <span class="text-xl font-medium text-[var(--text-muted)]">kg CO₂</span>
+        <div class="mb-5 flex items-baseline gap-1.5">
+          <span id="co2-value" class="text-4xl font-extrabold tracking-tight"></span> 
+          <span class="text-sm font-semibold text-gray-400">kg CO₂</span>
         </div>
-        
-        <div class="bg-[var(--bg-input)] p-5 rounded border border-[var(--border-color)]">
-          <p id="contextual-nudge" class="italic text-lg leading-relaxed text-[var(--text-main)]"></p>
+        <div class="bg-black/30 p-4 rounded-xl border border-white/5">
+          <p id="contextual-nudge" class="italic text-sm text-gray-300 leading-relaxed"></p>
         </div>
-
-        <!-- Share Impact Card Button -->
-        <button type="button" id="share-btn" class="mt-4 w-full py-3 rounded border border-[var(--accent-forest)] hover:bg-[var(--accent-forest-hover)] transition-colors text-sm font-semibold flex items-center justify-center gap-2" aria-label="Share carbon stats to clipboard">
-          <svg class="w-4 h-4 fill-current text-[var(--text-main)]" viewBox="0 0 24 24">
+        <button type="button" id="share-btn" class="mt-4 w-full py-2.5 rounded-xl border border-emerald-600/30 bg-emerald-600/10 hover:bg-emerald-600/20 text-white transition-all text-xs font-bold flex items-center justify-center gap-2" aria-label="Share carbon stats to clipboard">
+          <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
             <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/>
           </svg>
-          <span>Share Eco-Impact Status</span>
+          <span>Share Eco-Impact</span>
         </button>
       </section>
 
-      <!-- SVG World Representation -->
-      <section class="living-world flex-1 solid-panel p-8 rounded-lg flex items-center justify-center thriving" aria-label="Visual representation of environmental impact">
-        <!-- High-quality Lightweight Inline SVG (Forest Green & Charcoal accents) -->
-        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Stylized carbon indicator tree showing environmental health">
-          <!-- Ground -->
-          <ellipse class="ground" cx="100" cy="175" rx="85" ry="15" />
+      <!-- Carbon Analytics Center (Weekly, Source, Monthly charts) -->
+      <section class="glass-card p-6 rounded-3xl" aria-labelledby="analytics-heading">
+        <h2 id="analytics-heading" class="text-sm font-bold uppercase tracking-widest text-gray-400 mb-4">Carbon Analytics</h2>
+        <div class="space-y-6">
           
-          <!-- Tree Trunk -->
-          <path class="tree-trunk" d="M90 175 C92 120, 95 90, 100 80 C105 90, 108 120, 110 175 Z" />
-          
-          <!-- Tree Canopy -->
-          <circle class="tree-canopy" cx="100" cy="75" r="45" />
-          <circle class="tree-canopy" cx="65" cy="105" r="35" />
-          <circle class="tree-canopy" cx="135" cy="105" r="35" />
-          <circle class="tree-canopy" cx="80" cy="45" r="30" />
-          <circle class="tree-canopy" cx="120" cy="45" r="30" />
-        </svg>
+          <!-- Category Breakdown Pie Chart -->
+          <div>
+            <h3 class="text-xs text-gray-400 font-bold mb-3 uppercase tracking-wider">CO₂ Source Breakdown</h3>
+            <div class="h-44 flex items-center justify-center">
+              <canvas id="sourceChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Weekly Impact Bar Chart -->
+          <div>
+            <h3 class="text-xs text-gray-400 font-bold mb-3 uppercase tracking-wider">Weekly Emission (kg CO₂)</h3>
+            <div class="h-44 flex items-center justify-center">
+              <canvas id="weeklyChart"></canvas>
+            </div>
+          </div>
+
+          <!-- GitHub-style Contribution Heatmap -->
+          <div>
+            <h3 class="text-xs text-gray-400 font-bold mb-3 uppercase tracking-wider flex items-center justify-between">
+              <span>Eco Habit Heatmap</span>
+              <span class="text-[9px] text-gray-500">Commits last 15 days</span>
+            </h3>
+            <div class="grid grid-cols-15 gap-1" id="heatmap-grid" aria-label="Eco Commits Grid">
+              <!-- Dynamically populated 15-day cells -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Achievement Badges Grid -->
+      <section class="glass-card p-6 rounded-3xl" aria-labelledby="badges-panel-heading">
+        <h3 id="badges-panel-heading" class="text-sm font-bold uppercase tracking-widest text-gray-400 mb-4">Achievements Grid</h3>
+        <div id="badges-grid" class="grid grid-cols-3 gap-3">
+          <!-- Dynamically filled badges -->
+        </div>
+      </section>
+
+      <!-- Podium Redesigned Leaderboard -->
+      <section class="glass-card p-6 rounded-3xl" aria-labelledby="leaderboard-panel-heading">
+        <h3 id="leaderboard-panel-heading" class="text-sm font-bold uppercase tracking-widest text-gray-400 mb-5">Podium Leaderboard</h3>
+        <div id="leaderboard-list" class="space-y-3">
+          <!-- Dynamically loaded rankings with podium highlight classes -->
+        </div>
       </section>
     </div>
   </main>

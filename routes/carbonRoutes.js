@@ -104,4 +104,44 @@ router.post('/', async (req, res) => {
   }
 });
 
+// --- AI Carbon Coach Chat Endpoint ---
+router.post('/coach', async (req, res) => {
+  try {
+    const { message } = req.body;
+    if (!message || typeof message !== 'string') {
+      return res.status(400).json({ error: 'Message is required and must be a string' });
+    }
+
+    const systemPrompt = `
+      You are the AI Carbon Coach inside the Carbon Reduction Ecosystem 2.0.
+      Your objective is to analyze user habits, calculate carbon savings, suggest actionable green swaps, and motivate behavior change.
+      Provide a highly encouraging, informative, and concise response (max 3 sentences).
+      Use friendly markdown formatting.
+    `;
+
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+    const result = await model.generateContent(`${systemPrompt}\nUser Query: ${message}`);
+    const responseText = result.response.text();
+
+    // Async Cloud Logging
+    const metadata = { resource: { type: 'global' } };
+    const entry = log.entry(metadata, { action: 'chat_coach', query: message, timestamp: new Date().toISOString() });
+    log.write(entry).catch(err => console.error('GCP Logging Error:', err));
+
+    return res.status(200).json({ response: responseText.trim() });
+  } catch (error) {
+    console.error('Carbon Coach Error:', error);
+
+    // Async Error Logging
+    const metadata = { resource: { type: 'global' }, severity: 'ERROR' };
+    const entry = log.entry(metadata, { error: error.message, action: 'chat_coach_failed' });
+    log.write(entry).catch(err => console.error('GCP Logging Error:', err));
+
+    // Resilient fallback advice
+    return res.status(200).json({
+      response: "That's an interesting question! Switching to green public transit, eating plant-based meals, and monitoring home energy are great ways to reduce your carbon impact. Keep stepping forward! 🌍"
+    });
+  }
+});
+
 module.exports = router;
