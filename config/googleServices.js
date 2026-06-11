@@ -62,11 +62,15 @@ try {
     firebaseApp = admin.initializeApp();
     console.log('Firebase Admin initialized with config.');
   } else {
-    // Try to initialize using applicationDefault, catching errors if not logged in
-    firebaseApp = admin.initializeApp({
-      credential: admin.credential.applicationDefault()
-    });
-    console.log('Firebase Admin initialized with applicationDefault.');
+    // Try to initialize using applicationDefault, checking if credential object is defined
+    if (admin && admin.credential && typeof admin.credential.applicationDefault === 'function') {
+      firebaseApp = admin.initializeApp({
+        credential: admin.credential.applicationDefault()
+      });
+      console.log('Firebase Admin initialized with applicationDefault.');
+    } else {
+      throw new Error('admin.credential is unavailable in this module version.');
+    }
   }
 } catch (error) {
   console.warn('Firebase Admin failed to initialize (continuing without authentication services):', error.message);
