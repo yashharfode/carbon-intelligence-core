@@ -1,7 +1,7 @@
 const request = require('supertest');
 const app = require('../server');
 
-// Mock Gemini
+// Mock Google Generative AI
 jest.mock('@google/generative-ai', () => {
   return {
     GoogleGenerativeAI: jest.fn().mockImplementation(() => {
@@ -11,8 +11,8 @@ jest.mock('@google/generative-ai', () => {
             response: {
               text: () => JSON.stringify({
                 raw_co2_kg: 2.5,
-                contextual_nudge: "This is a mock nudge.",
-                environmental_impact_status: "degrading"
+                contextual_nudge: 'This is a mock nudge.',
+                environmental_impact_status: 'degrading'
               })
             }
           })
@@ -22,17 +22,18 @@ jest.mock('@google/generative-ai', () => {
   };
 });
 
-// Mock GCP Logging to prevent real API calls during tests
-jest.mock('@google-cloud/logging', () => {
+// Mock config/googleServices directly to avoid GCP warnings during unit tests
+jest.mock('../config/googleServices', () => {
   return {
-    Logging: jest.fn().mockImplementation(() => {
-      return {
-        log: jest.fn().mockReturnValue({
-          entry: jest.fn().mockReturnValue({}),
-          write: jest.fn().mockResolvedValue(true)
-        })
-      };
-    })
+    log: {
+      entry: jest.fn().mockReturnValue({}),
+      write: jest.fn().mockResolvedValue(true)
+    },
+    logging: {},
+    bigquery: {},
+    storage: {},
+    admin: {},
+    firebaseApp: {}
   };
 });
 
@@ -44,6 +45,7 @@ describe('POST /api/carbon', () => {
     
     expect(res.statusCode).toEqual(400);
     expect(res.body).toHaveProperty('error');
+    expect(res.body.error).toBeDefined();
   });
 
   it('should return the correct payload on successful Gemini calculation', async () => {
@@ -55,5 +57,14 @@ describe('POST /api/carbon', () => {
     expect(res.body).toHaveProperty('raw_co2_kg', 2.5);
     expect(res.body).toHaveProperty('contextual_nudge', 'This is a mock nudge.');
     expect(res.body).toHaveProperty('environmental_impact_status', 'degrading');
+  });
+
+  it('should use default values for duration and distance if they are missing', async () => {
+    const res = await request(app)
+      .post('/api/carbon')
+      .send({ activityType: 'Cycling' }); // duration/distance not provided
+
+    expect(res.statusCode).toEqual(200);
+    expect(res.body).toHaveProperty('raw_co2_kg', 2.5);
   });
 });

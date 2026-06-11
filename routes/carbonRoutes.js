@@ -1,17 +1,15 @@
 const express = require('express');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
-const { Logging } = require('@google-cloud/logging');
 const { z } = require('zod');
+const { log } = require('../config/googleServices');
 
 const router = express.Router();
-const logging = new Logging();
-const log = logging.log('carbon-transactions');
 
 // Initialize Gemini
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || 'mock-key');
 
 // --- Strict Input Validation Schema (Zod) ---
-// This prevents prompt injection by strictly typing and validating the input payload.
+// Preprocesses values to safely parse numbers, preventing unexpected crashes, and protects against injection.
 const activitySchema = z.object({
   activityType: z.enum([
     'Driving a petrol car',
@@ -20,12 +18,18 @@ const activitySchema = z.object({
     'Running AC',
     'Cycling'
   ], {
-    required_error: "Activity type is required",
-    invalid_type_error: "Invalid activity type selected"
+    required_error: 'Activity type is required',
+    invalid_type_error: 'Invalid activity type selected'
   }),
-  duration: z.number().min(0, "Duration cannot be negative").max(1440, "Duration exceeds daily limit"),
-  distance: z.number().min(0, "Distance cannot be negative").max(10000, "Distance exceeds logical limit"),
-  unit: z.enum(['km', 'miles'])
+  duration: z.preprocess(
+    (val) => val === undefined || val === null || val === '' ? 0 : Number(val),
+    z.number().min(0, 'Duration cannot be negative').max(1440, 'Duration exceeds daily limit')
+  ).default(0),
+  distance: z.preprocess(
+    (val) => val === undefined || val === null || val === '' ? 0 : Number(val),
+    z.number().min(0, 'Distance cannot be negative').max(10000, 'Distance exceeds logical limit')
+  ).default(0),
+  unit: z.enum(['km', 'miles']).default('km')
 });
 
 router.post('/', async (req, res) => {
@@ -93,7 +97,7 @@ router.post('/', async (req, res) => {
     const fallbackResponse = {
       raw_co2_kg: 5.0, // Default generic value
       contextual_nudge: "We couldn't calculate the exact impact right now, but every small step counts. Consider greener choices like walking or public transit next time!",
-      environmental_impact_status: "degrading"
+      environmental_impact_status: 'degrading'
     };
     
     return res.status(206).json(fallbackResponse);

@@ -6,18 +6,23 @@ const dotenv = require('dotenv');
 const path = require('path');
 const carbonRoutes = require('./routes/carbonRoutes');
 
-dotenv.config();
+// Load both .env.local and .env
+dotenv.config({ path: ['.env.local', '.env'] });
 
 const app = express();
+
+// Enable trust proxy for accurate rate limiting behind load balancers/proxies
+app.set('trust proxy', 1);
 
 // Security Middlewares
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "https://cdn.tailwindcss.com"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.tailwindcss.com"],
-      imgSrc: ["'self'", "data:", "https:"],
+      scriptSrc: ["'self'", 'https://cdn.tailwindcss.com'],
+      styleSrc: ["'self'", "'unsafe-inline'", 'https://cdn.tailwindcss.com', 'https://fonts.googleapis.com'],
+      fontSrc: ["'self'", 'https://fonts.gstatic.com'],
+      imgSrc: ["'self'", 'data:', 'https:'],
       connectSrc: ["'self'"],
     },
   },

@@ -53,7 +53,7 @@
     /* SVG Animation - Lightweight */
     .living-world svg {
       width: 100%;
-      max-width: 350px;
+      max-width: 300px;
       height: auto;
       transition: all 0.8s ease-in-out;
     }
@@ -155,76 +155,171 @@
       margin-right: 8px;
     }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    /* Badge Lock State Styling */
+    .badge-card {
+      background-color: var(--bg-input);
+      border: 1px solid var(--border-color);
+      transition: all 0.3s ease;
+    }
+    .badge-card.locked {
+      opacity: 0.4;
+      filter: grayscale(1);
+    }
+    .badge-card.unlocked {
+      border-color: var(--accent-forest);
+      box-shadow: 0 0 10px rgba(45, 106, 79, 0.2);
+    }
   </style>
 </head>
 <body class="flex flex-col items-center py-12 px-6">
   <a href="#main-content" class="skip-link">Skip to main content</a>
 
   <header class="mb-12 text-center max-w-2xl">
-    <h1 class="text-4xl md:text-5xl font-bold mb-4 tracking-tight">Carbon Footprint Awareness</h1>
-    <p class="text-lg md:text-xl text-[var(--text-muted)] font-medium">Track your impact. Make conscious choices.</p>
+    <h1 class="text-4xl md:text-5xl font-bold mb-4 tracking-tight">Carbon Footprint Platform</h1>
+    <p class="text-lg md:text-xl text-[var(--text-muted)] font-medium">Empowering sustainable changes through AI and community insights.</p>
   </header>
 
   <main id="main-content" class="w-full max-w-5xl flex flex-col lg:flex-row gap-8">
     
-    <!-- Form Section -->
-    <section class="flex-1 solid-panel p-8 rounded-lg" aria-labelledby="form-heading">
-      <h2 id="form-heading" class="text-2xl font-semibold mb-6 tracking-wide">Log Activity</h2>
+    <!-- Left Column: Form, Badges, Leaderboard -->
+    <div class="flex-1 flex flex-col gap-8">
       
-      <form id="activity-form" class="space-y-5">
-        <div>
-          <label for="activityType" class="block mb-2 text-sm font-semibold text-[var(--text-muted)]">Activity Type</label>
-          <select id="activityType" name="activityType" required class="input-field w-full p-3.5 rounded appearance-none" aria-required="true">
-            <option value="" disabled selected>Select an activity...</option>
-            <option value="Driving a petrol car">Driving a petrol car</option>
-            <option value="Taking a bus">Taking a bus</option>
-            <option value="Eating a beef burger">Eating a beef burger</option>
-            <option value="Running AC">Running AC</option>
-            <option value="Cycling">Cycling</option>
-          </select>
-        </div>
-
-        <div>
-          <label for="duration" class="block mb-2 text-sm font-semibold text-[var(--text-muted)]">Duration (minutes)</label>
-          <input type="number" id="duration" name="duration" min="0" class="input-field w-full p-3.5 rounded" placeholder="e.g., 30" aria-label="Duration in minutes">
-        </div>
-
-        <div class="flex gap-5">
-          <div class="flex-1">
-            <label for="distance" class="block mb-2 text-sm font-semibold text-[var(--text-muted)]">Distance</label>
-            <input type="number" id="distance" name="distance" min="0" class="input-field w-full p-3.5 rounded" placeholder="e.g., 10" aria-label="Distance">
-          </div>
-          <div class="w-1/3">
-            <label for="unit" class="block mb-2 text-sm font-semibold text-[var(--text-muted)]">Unit</label>
-            <select id="unit" name="unit" class="input-field w-full p-3.5 rounded appearance-none" aria-label="Unit of distance">
-              <option value="km">km</option>
-              <option value="miles">miles</option>
+      <!-- Form Section -->
+      <section class="solid-panel p-8 rounded-lg" aria-labelledby="form-heading">
+        <h2 id="form-heading" class="text-2xl font-semibold mb-6 tracking-wide flex items-center justify-between">
+          <span>Log Activity</span>
+          
+          <!-- Voice Assistant Button -->
+          <button type="button" id="mic-btn" class="p-2.5 rounded-full bg-[var(--bg-input)] hover:bg-[var(--border-color)] transition-colors border border-[var(--border-color)] flex items-center justify-center" aria-label="Start Voice Input" title="Voice dictation (e.g. 'Cycling for 30 minutes')">
+            <svg class="w-5 h-5 fill-current text-[var(--text-main)]" id="mic-icon" viewBox="0 0 24 24">
+              <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/>
+            </svg>
+          </button>
+        </h2>
+        
+        <!-- Speech Status Hint -->
+        <p id="voice-status" class="text-xs text-[var(--text-muted)] bg-[var(--bg-input)] p-2 rounded mb-5 text-center hidden" aria-live="polite">
+          Listening... Say something like "Driving petrol car for 10 kilometers in 20 minutes".
+        </p>
+        
+        <form id="activity-form" class="space-y-5">
+          <div>
+            <label for="activityType" class="block mb-2 text-sm font-semibold text-[var(--text-muted)]">Activity Type</label>
+            <select id="activityType" name="activityType" required class="input-field w-full p-3.5 rounded appearance-none" aria-required="true">
+              <option value="" disabled selected>Select an activity...</option>
+              <option value="Driving a petrol car">Driving a petrol car</option>
+              <option value="Taking a bus">Taking a bus</option>
+              <option value="Eating a beef burger">Eating a beef burger</option>
+              <option value="Running AC">Running AC</option>
+              <option value="Cycling">Cycling</option>
             </select>
           </div>
+
+          <div>
+            <label for="duration" class="block mb-2 text-sm font-semibold text-[var(--text-muted)]">Duration (minutes)</label>
+            <input type="number" id="duration" name="duration" min="0" class="input-field w-full p-3.5 rounded" placeholder="e.g., 30" aria-label="Duration in minutes">
+          </div>
+
+          <div class="flex gap-5">
+            <div class="flex-1">
+              <label for="distance" class="block mb-2 text-sm font-semibold text-[var(--text-muted)]">Distance</label>
+              <input type="number" id="distance" name="distance" min="0" class="input-field w-full p-3.5 rounded" placeholder="e.g., 10" aria-label="Distance">
+            </div>
+            <div class="w-1/3">
+              <label for="unit" class="block mb-2 text-sm font-semibold text-[var(--text-muted)]">Unit</label>
+              <select id="unit" name="unit" class="input-field w-full p-3.5 rounded appearance-none" aria-label="Unit of distance">
+                <option value="km">km</option>
+                <option value="miles">miles</option>
+              </select>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-submit w-full py-4 rounded font-semibold text-lg mt-8 flex items-center justify-center" aria-label="Calculate Footprint">
+            <span class="btn-text">Calculate Impact</span>
+          </button>
+        </form>
+      </section>
+
+      <!-- Badges Section -->
+      <section class="solid-panel p-8 rounded-lg" aria-labelledby="badges-heading">
+        <h3 id="badges-heading" class="text-xl font-semibold mb-5 tracking-wide">Achievements & Badges</h3>
+        <div id="badges-grid" class="grid grid-cols-2 gap-4">
+          <!-- Dynamically filled badges -->
         </div>
+      </section>
 
-        <button type="submit" class="btn-submit w-full py-4 rounded font-semibold text-lg mt-8 flex items-center justify-center" aria-label="Calculate Footprint">
-          <span class="btn-text">Calculate Impact</span>
-        </button>
-      </form>
-    </section>
+      <!-- Community Leaderboard -->
+      <section class="solid-panel p-8 rounded-lg" aria-labelledby="leaderboard-heading">
+        <h3 id="leaderboard-heading" class="text-xl font-semibold mb-5 tracking-wide">Community Impact Leaderboard</h3>
+        <div id="leaderboard-list" class="space-y-3.5">
+          <!-- Dynamic Leaderboard list -->
+        </div>
+      </section>
+    </div>
 
-    <!-- Results & Living World Section -->
-    <section class="flex-1 flex flex-col gap-8" aria-labelledby="results-heading">
-      <div id="results-card" class="solid-panel p-8 rounded-lg hidden opacity-0 transition-opacity duration-300 ease-in-out" aria-live="polite">
-        <h2 id="results-heading" class="text-sm font-bold mb-4 text-[var(--text-muted)] uppercase tracking-widest">Your Impact Assessment</h2>
+    <!-- Right Column: Status Card, Results Card, SVG World -->
+    <div class="flex-1 flex flex-col gap-8">
+      
+      <!-- Gamification Dashboard Status -->
+      <section class="solid-panel p-6 rounded-lg flex items-center justify-between" aria-label="Points and Streak overview">
+        <div>
+          <h2 class="text-xs font-bold text-[var(--text-muted)] uppercase tracking-widest mb-1.5">Eco Dashboard</h2>
+          <div class="flex items-center gap-6 mt-3">
+            <div>
+              <span class="text-xs text-[var(--text-muted)] block">Eco-Score</span>
+              <span id="eco-score" class="text-3xl font-bold text-[var(--text-main)]">100</span>
+            </div>
+            <div class="border-l border-[var(--border-color)] pl-6">
+              <span class="text-xs text-[var(--text-muted)] block">Green Streak</span>
+              <span id="streak-count" class="text-3xl font-bold text-[var(--text-main)] flex items-center gap-1.5">
+                0 <span class="text-xl" aria-hidden="true">🌿</span>
+              </span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="text-right">
+          <span class="text-xs text-[var(--text-muted)] block mb-1 font-medium">Rank Title</span>
+          <span id="active-title" class="px-2.5 py-1 rounded bg-[var(--accent-forest)] text-xs font-bold text-[var(--text-main)]">Carbon Novice</span>
+        </div>
+      </section>
+
+      <!-- Results Assessment Card -->
+      <section id="results-card" class="solid-panel p-8 rounded-lg hidden opacity-0 transition-opacity duration-300 ease-in-out" aria-live="polite">
+        <div class="flex items-center justify-between mb-4">
+          <h2 id="results-heading" class="text-sm font-bold text-[var(--text-muted)] uppercase tracking-widest">Your Impact Assessment</h2>
+          
+          <!-- Text to Speech Trigger -->
+          <button type="button" id="speak-btn" class="p-2 rounded hover:bg-[var(--bg-input)] transition-colors border border-[var(--border-color)]" aria-label="Listen to assessment text" title="Read assessment aloud">
+            <svg class="w-5 h-5 fill-current text-[var(--accent-forest)]" viewBox="0 0 24 24">
+              <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+            </svg>
+          </button>
+        </div>
+        
         <div class="mb-6 flex items-baseline gap-2">
           <span id="co2-value" class="text-5xl font-bold tracking-tight"></span> 
           <span class="text-xl font-medium text-[var(--text-muted)]">kg CO₂</span>
         </div>
+        
         <div class="bg-[var(--bg-input)] p-5 rounded border border-[var(--border-color)]">
           <p id="contextual-nudge" class="italic text-lg leading-relaxed text-[var(--text-main)]"></p>
         </div>
-      </div>
 
-      <div class="living-world flex-1 solid-panel p-8 rounded-lg flex items-center justify-center thriving" aria-label="Visual representation of environmental impact">
-        <!-- High-quality Lightweight Inline SVG -->
-        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A stylized tree representing the environment">
+        <!-- Share Impact Card Button -->
+        <button type="button" id="share-btn" class="mt-4 w-full py-3 rounded border border-[var(--accent-forest)] hover:bg-[var(--accent-forest-hover)] transition-colors text-sm font-semibold flex items-center justify-center gap-2" aria-label="Share carbon stats to clipboard">
+          <svg class="w-4 h-4 fill-current text-[var(--text-main)]" viewBox="0 0 24 24">
+            <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/>
+          </svg>
+          <span>Share Eco-Impact Status</span>
+        </button>
+      </section>
+
+      <!-- SVG World Representation -->
+      <section class="living-world flex-1 solid-panel p-8 rounded-lg flex items-center justify-center thriving" aria-label="Visual representation of environmental impact">
+        <!-- High-quality Lightweight Inline SVG (Forest Green & Charcoal accents) -->
+        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Stylized carbon indicator tree showing environmental health">
           <!-- Ground -->
           <ellipse class="ground" cx="100" cy="175" rx="85" ry="15" />
           
@@ -238,8 +333,8 @@
           <circle class="tree-canopy" cx="80" cy="45" r="30" />
           <circle class="tree-canopy" cx="120" cy="45" r="30" />
         </svg>
-      </div>
-    </section>
+      </section>
+    </div>
   </main>
 
   <!-- Toast Container -->
