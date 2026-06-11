@@ -8,6 +8,8 @@
 
 > A premium, modern, AI-powered sustainability ecosystem designed to help individuals **understand, track, and reduce** their carbon footprint through simple actions, gamified progression, and personalized AI-driven insights.
 
+![Ecosystem Dashboard Screenshot](./screenshot.png)
+
 ---
 
 ## 🎨 Premium Startup Visual Identity
