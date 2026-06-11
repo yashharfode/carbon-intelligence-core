@@ -52,6 +52,16 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   let stats = JSON.parse(localStorage.getItem('eco_stats_v2')) || defaultStats;
+  
+  // Safe deep merge to prevent TypeError crashes during rendering of badges/commits
+  stats = { ...defaultStats, ...stats };
+  if (!Array.isArray(stats.unlockedBadges)) stats.unlockedBadges = [];
+  if (!Array.isArray(stats.commits)) stats.commits = [...defaultStats.commits];
+  if (stats.sources) {
+    stats.sources = { ...defaultStats.sources, ...stats.sources };
+  } else {
+    stats.sources = { ...defaultStats.sources };
+  }
 
   const BADGES = [
     { id: 'first_step', name: '🌱 Green Sprout', desc: 'Logged your first activity (+30 XP)' },
@@ -95,11 +105,11 @@ document.addEventListener('DOMContentLoaded', () => {
       // Seed / sprout SVG
       svgContent += `
         <!-- Sprout Stem -->
-        <path d="M100 180 Q104 162 100 150 Q96 162 100 180" fill="#10b981" />
+        <path class="ecosystem-element" d="M100 180 Q104 162 100 150 Q96 162 100 180" fill="#10b981" />
         <!-- Small Sprout Leaves -->
-        <path d="M100 150 Q85 142 90 152 C95 155 100 152 100 150" fill="#84cc16" />
-        <path d="M100 150 Q115 142 110 152 C105 155 100 152 100 150" fill="#10b981" />
-        <circle cx="100" cy="178" r="4.5" fill="#78350f" />
+        <path class="ecosystem-element" d="M100 150 Q85 142 90 152 C95 155 100 152 100 150" fill="#84cc16" />
+        <path class="ecosystem-element" d="M100 150 Q115 142 110 152 C105 155 100 152 100 150" fill="#10b981" />
+        <circle class="ecosystem-element" cx="100" cy="178" r="4.5" fill="#78350f" />
       `;
     } else if (points < 300) {
       stageTitle = 'Plant Stage 🌿';
@@ -108,11 +118,11 @@ document.addEventListener('DOMContentLoaded', () => {
       // Sapling SVG
       svgContent += `
         <!-- Sapling Stem -->
-        <path d="M99 180 Q101 130 96 110 Q104 130 101 180 Z" fill="#78350f" />
+        <path class="ecosystem-element" d="M99 180 Q101 130 96 110 Q104 130 101 180 Z" fill="#78350f" />
         <!-- Leaves -->
-        <path d="M97 140 Q80 128 75 138 Q90 143 97 140" fill="#10b981" />
-        <path d="M100 125 Q120 115 125 125 Q110 130 100 125" fill="#84cc16" />
-        <path d="M96 110 Q90 92 100 82 Q105 95 96 110" fill="#10b981" />
+        <path class="ecosystem-element" d="M97 140 Q80 128 75 138 Q90 143 97 140" fill="#10b981" />
+        <path class="ecosystem-element" d="M100 125 Q120 115 125 125 Q110 130 100 125" fill="#84cc16" />
+        <path class="ecosystem-element" d="M96 110 Q90 92 100 82 Q105 95 96 110" fill="#10b981" />
       `;
     } else if (points < 600) {
       stageTitle = 'Tree Stage 🌳';
@@ -121,15 +131,15 @@ document.addEventListener('DOMContentLoaded', () => {
       // Mature Tree SVG
       svgContent += `
         <!-- Main Trunk -->
-        <path d="M93 180 C96 130 90 110 100 90 C110 110 104 130 107 180 Z" fill="#78350f" />
-        <path d="M98 120 Q84 100 74 105 Q84 112 98 120" fill="#78350f" />
-        <path d="M102 115 Q116 95 126 100 Q116 107 102 115" fill="#78350f" />
+        <path class="ecosystem-element" d="M93 180 C96 130 90 110 100 90 C110 110 104 130 107 180 Z" fill="#78350f" />
+        <path class="ecosystem-element" d="M98 120 Q84 100 74 105 Q84 112 98 120" fill="#78350f" />
+        <path class="ecosystem-element" d="M102 115 Q116 95 126 100 Q116 107 102 115" fill="#78350f" />
         <!-- Lush Green Canopy -->
-        <circle cx="100" cy="80" r="30" fill="#10b981" />
-        <circle cx="76" cy="100" r="24" fill="#047857" />
-        <circle cx="124" cy="100" r="24" fill="#047857" />
-        <circle cx="86" cy="72" r="20" fill="#84cc16" />
-        <circle cx="114" cy="72" r="20" fill="#84cc16" />
+        <circle class="ecosystem-element" cx="100" cy="80" r="30" fill="#10b981" />
+        <circle class="ecosystem-element" cx="76" cy="100" r="24" fill="#047857" />
+        <circle class="ecosystem-element" cx="124" cy="100" r="24" fill="#047857" />
+        <circle class="ecosystem-element" cx="86" cy="72" r="20" fill="#84cc16" />
+        <circle class="ecosystem-element" cx="114" cy="72" r="20" fill="#84cc16" />
       `;
     } else if (points < 1000) {
       stageTitle = 'Forest Stage 🌲🌲🌲';
@@ -138,20 +148,20 @@ document.addEventListener('DOMContentLoaded', () => {
       // Triple overlapping trees SVG
       svgContent += `
         <!-- Left Pine -->
-        <path d="M60 180 L62 135 L58 135 Z" fill="#451a03" />
-        <polygon points="60,115 42,150 78,150" fill="#065f46" />
-        <polygon points="60,100 46,132 74,132" fill="#047857" />
+        <path class="ecosystem-element" d="M60 180 L62 135 L58 135 Z" fill="#451a03" />
+        <polygon class="ecosystem-element" points="60,115 42,150 78,150" fill="#065f46" />
+        <polygon class="ecosystem-element" points="60,100 46,132 74,132" fill="#047857" />
 
         <!-- Right Pine -->
-        <path d="M140 180 L142 135 L138 135 Z" fill="#451a03" />
-        <polygon points="140,115 122,150 158,150" fill="#065f46" />
-        <polygon points="140,100 126,132 154,132" fill="#047857" />
+        <path class="ecosystem-element" d="M140 180 L142 135 L138 135 Z" fill="#451a03" />
+        <polygon class="ecosystem-element" points="140,115 122,150 158,150" fill="#065f46" />
+        <polygon class="ecosystem-element" points="140,100 126,132 154,132" fill="#047857" />
 
         <!-- Center Tree -->
-        <path d="M100 180 C102 120 98 100 100 80 Z" fill="#78350f" />
-        <circle cx="100" cy="80" r="28" fill="#10b981" />
-        <circle cx="82" cy="98" r="20" fill="#059669" />
-        <circle cx="118" cy="98" r="20" fill="#059669" />
+        <path class="ecosystem-element" d="M100 180 C102 120 98 100 100 80 Z" fill="#78350f" />
+        <circle class="ecosystem-element" cx="100" cy="80" r="28" fill="#10b981" />
+        <circle class="ecosystem-element" cx="82" cy="98" r="20" fill="#059669" />
+        <circle class="ecosystem-element" cx="118" cy="98" r="20" fill="#059669" />
       `;
     } else {
       stageTitle = 'Eco City Stage 🌎';
@@ -160,17 +170,17 @@ document.addEventListener('DOMContentLoaded', () => {
       // Planet Earth with tiny wind turbine & clean assets
       svgContent += `
         <!-- Globe -->
-        <circle cx="100" cy="115" r="54" fill="#1e3a8a" stroke="#10b981" stroke-width="2.5" />
+        <circle class="ecosystem-element" cx="100" cy="115" r="54" fill="#1e3a8a" stroke="#10b981" stroke-width="2.5" />
         <!-- Continents -->
-        <path d="M72 85 C82 80 92 90 82 105 C72 115 62 105 72 85 Z" fill="#047857" />
-        <path d="M112 125 C122 115 137 125 132 140 C122 150 112 140 112 125 Z" fill="#047857" />
-        <path d="M120 90 C130 95 135 85 130 80 C125 75 115 85 120 90 Z" fill="#047857" />
+        <path class="ecosystem-element" d="M72 85 C82 80 92 90 82 105 C72 115 62 105 72 85 Z" fill="#047857" />
+        <path class="ecosystem-element" d="M112 125 C122 115 137 125 132 140 C122 150 112 140 112 125 Z" fill="#047857" />
+        <path class="ecosystem-element" d="M120 90 C130 95 135 85 130 80 C125 75 115 85 120 90 Z" fill="#047857" />
         <!-- Miniature Wind Turbine -->
-        <line x1="100" y1="115" x2="100" y2="70" stroke="#f3f4f6" stroke-width="2" />
-        <circle cx="100" cy="70" r="3" fill="#f59e0b" />
-        <path d="M100 70 L86 62 M100 70 L114 62 M100 70 L100 90" stroke="#f3f4f6" stroke-width="1.5" />
+        <line class="ecosystem-element" x1="100" y1="115" x2="100" y2="70" stroke="#f3f4f6" stroke-width="2" />
+        <circle class="ecosystem-element" cx="100" cy="70" r="3" fill="#f59e0b" />
+        <path class="ecosystem-element" d="M100 70 L86 62 M100 70 L114 62 M100 70 L100 90" stroke="#f3f4f6" stroke-width="1.5" />
         <!-- Green sprout on side -->
-        <path d="M54 110 Q58 102 54 96" stroke="#84cc16" stroke-width="2" fill="none" />
+        <path class="ecosystem-element" d="M54 110 Q58 102 54 96" stroke="#84cc16" stroke-width="2" fill="none" />
       `;
     }
 
@@ -236,6 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderRecommendations();
     renderHeatmap();
     renderEcosystem(stats.ecoPoints);
+    renderCommunityStats();
   };
 
   const renderLeaderboard = () => {
@@ -842,6 +853,51 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // --- Carbon Offset Marketplace Logic ---
+  let communityTrees = parseInt(localStorage.getItem('community_trees_val')) || 1240;
+  let communitySaved = parseInt(localStorage.getItem('community_saved_val')) || 4821;
+
+  const renderCommunityStats = () => {
+    const treesEl = document.getElementById('community-trees');
+    const savedEl = document.getElementById('community-saved');
+    if (treesEl) treesEl.textContent = `🌳 ${communityTrees.toLocaleString()} Trees Planted`;
+    if (savedEl) savedEl.textContent = `🌍 ${communitySaved.toLocaleString()} kg`;
+  };
+
+  const initMarketplace = () => {
+    document.querySelectorAll('.redeem-offset-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const cost = parseInt(e.currentTarget.getAttribute('data-cost'), 10);
+        const item = e.currentTarget.getAttribute('data-item');
+
+        if (stats.ecoPoints < cost) {
+          showToast(`Insufficient Eco Points! You need ${cost - stats.ecoPoints} more XP to redeem this.`, 'error');
+          return;
+        }
+
+        // Deduct points
+        stats.ecoPoints -= cost;
+        
+        // Trigger Confetti
+        window.confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+
+        // Update community stats
+        if (item === 'sapling') {
+          communityTrees += 1;
+          localStorage.setItem('community_trees_val', communityTrees);
+          showToast('Success! 1 real sapling sponsored to GreenBhopal NGO. 🌳', 'success');
+        } else {
+          communitySaved += 10;
+          localStorage.setItem('community_saved_val', communitySaved);
+          showToast('Success! 10kg Carbon Removal certificate purchased. 🌍', 'success');
+        }
+
+        saveStats();
+        renderDashboard();
+      });
+    });
+  };
+
   // --- Toast messages helper ---
   const showToast = (message, type = 'success') => {
     const toast = document.createElement('div');
@@ -859,4 +915,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- Initialize Platform ---
   initCharts();
   renderDashboard();
+  initMarketplace();
+  renderCommunityStats();
 });
