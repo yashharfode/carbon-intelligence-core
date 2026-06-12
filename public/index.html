@@ -161,6 +161,10 @@
       border: 0;
     }
 
+    button:focus, a:focus, select:focus, input:focus {
+      outline: 2px dashed var(--accent-lime);
+      outline-offset: 2px;
+    }
     button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible {
       outline: 3px solid var(--accent-lime) !important;
       outline-offset: 2px !important;
@@ -413,8 +417,10 @@
               <span>Eco Habit Heatmap</span>
               <span class="text-[9px] text-gray-400">Commits last 15 days</span>
             </h3>
-            <div class="grid grid-cols-15 gap-1" id="heatmap-grid" aria-label="Eco Commits Grid">
-              <!-- Dynamically populated 15-day cells -->
+            <div class="w-full overflow-x-auto pb-1 scrollbar-thin">
+              <div class="grid grid-cols-15 gap-1 min-w-[280px]" id="heatmap-grid" aria-label="Eco Commits Grid">
+                <!-- Dynamically populated 15-day cells -->
+              </div>
             </div>
           </div>
         </div>

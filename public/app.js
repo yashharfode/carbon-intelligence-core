@@ -40,6 +40,16 @@ document.addEventListener('DOMContentLoaded', () => {
   const shareBtn = document.getElementById('share-btn');
   const badgesGrid = document.getElementById('badges-grid');
 
+  // HTML escaping utility for XSS protection
+  const escapeHtml = (unsafe) => {
+    return String(unsafe)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  };
+
   // --- Initialize Gamified Stats ---
   const defaultStats = {
     ecoPoints: 50, // Starts with 50 XP
@@ -671,7 +681,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const displayResults = (result, isFallback) => {
     co2Value.textContent = result.raw_co2_kg;
-    let nudge = `"${result.contextual_nudge}"`;
+    const cleanNudge = escapeHtml(result.contextual_nudge || '');
+    let nudge = `"${cleanNudge}"`;
     if (isFallback) {
       nudge += ' <span class="block mt-2 text-xs text-lime-400 font-bold">Fallback active</span>';
     }
@@ -740,11 +751,12 @@ document.addEventListener('DOMContentLoaded', () => {
       const replyBubble = document.createElement('div');
       replyBubble.className = 'self-start bg-white/[0.04] text-gray-300 max-w-[85%] p-3.5 rounded-2xl rounded-tl-none leading-relaxed';
       
-      // Simplistic markdown parse
-      let text = data.response || "That's an interesting question! Swapping private trips with cycling saves around 2.4kg of CO2 per trip.";
-      text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-      text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
-      replyBubble.innerHTML = text;
+      // Simplistic markdown parse after safe escaping
+      const text = data.response || "That's an interesting question! Swapping private trips with cycling saves around 2.4kg of CO2 per trip.";
+      let safeText = escapeHtml(text);
+      safeText = safeText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      safeText = safeText.replace(/\*(.*?)\*/g, '<em>$1</em>');
+      replyBubble.innerHTML = safeText;
 
       coachMessages.appendChild(replyBubble);
       coachMessages.scrollTop = coachMessages.scrollHeight;
