@@ -38,6 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const voiceStatus = document.getElementById('voice-status');
   const speakBtn = document.getElementById('speak-btn');
   const shareBtn = document.getElementById('share-btn');
+  const badgesGrid = document.getElementById('badges-grid');
 
   // --- Initialize Gamified Stats ---
   const defaultStats = {

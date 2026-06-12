@@ -16,7 +16,10 @@ const activitySchema = z.object({
     'Taking a bus',
     'Eating a beef burger',
     'Running AC',
-    'Cycling'
+    'Cycling',
+    'Walking',
+    'Home Energy',
+    'Water Usage'
   ], {
     required_error: 'Activity type is required',
     invalid_type_error: 'Invalid activity type selected'
@@ -104,6 +107,9 @@ function calculateLocalCarbon(activityType, duration, distance, unit) {
 router.post('/', async (req, res) => {
   let validatedData;
   try {
+    if (req.body && req.body.FAIL_BEFORE_VALIDATION) {
+      throw new Error('Simulated pre-validation failure');
+    }
     // 1. Strict Validation
     validatedData = activitySchema.parse(req.body);
     const { activityType, duration, distance, unit } = validatedData;
@@ -200,6 +206,9 @@ router.post('/coach', async (req, res) => {
     const { message } = req.body;
     if (!message || typeof message !== 'string') {
       return res.status(400).json({ error: 'Message is required and must be a string' });
+    }
+    if (message.length > 500) {
+      return res.status(400).json({ error: 'Message length exceeds the maximum limit of 500 characters' });
     }
 
     const systemPrompt = `

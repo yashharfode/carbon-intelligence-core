@@ -145,7 +145,25 @@
       box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25) !important;
     }
     .input-field::placeholder {
-      color: #555555 !important;
+      color: #9ca3af !important;
+    }
+
+    /* Accessibility screen-reader utilities & keyboard focus rings */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible {
+      outline: 3px solid var(--accent-lime) !important;
+      outline-offset: 2px !important;
     }
 
     /* Springy Pop-in growth animations */
@@ -190,28 +208,28 @@
       <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">CO₂ Saved</span>
       <div class="mt-2 flex items-baseline gap-1">
         <span id="co2-saved" class="text-2xl font-extrabold text-emerald-400">0</span>
-        <span class="text-xs text-gray-500 font-bold">kg</span>
+        <span class="text-xs text-gray-400 font-bold">kg</span>
       </div>
     </div>
     <div class="glass-card p-4 rounded-2xl flex flex-col justify-between">
       <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Trees Equivalent</span>
       <div class="mt-2 flex items-baseline gap-1">
         <span id="trees-planted" class="text-2xl font-extrabold text-lime-400">0.0</span>
-        <span class="text-xs text-gray-500 font-bold">Trees</span>
+        <span class="text-xs text-gray-400 font-bold">Trees</span>
       </div>
     </div>
     <div class="glass-card p-4 rounded-2xl flex flex-col justify-between">
       <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Green Streak</span>
       <div class="mt-2 flex items-baseline gap-1">
         <span id="streak-count" class="text-2xl font-extrabold text-amber-500">0</span>
-        <span class="text-xs text-gray-500 font-bold">Days 🔥</span>
+        <span class="text-xs text-gray-400 font-bold">Days 🔥</span>
       </div>
     </div>
     <div class="glass-card p-4 rounded-2xl flex flex-col justify-between">
       <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Community Rank</span>
       <div class="mt-2 flex items-baseline gap-1">
         <span id="community-rank" class="text-2xl font-extrabold text-blue-400">#4</span>
-        <span class="text-xs text-gray-500 font-bold">Rank</span>
+        <span class="text-xs text-gray-400 font-bold">Rank</span>
       </div>
     </div>
     <div class="glass-card p-4 rounded-2xl col-span-2 flex flex-col justify-between">
@@ -259,49 +277,50 @@
           <div class="activity-card glass-card p-3.5 rounded-xl flex flex-col items-center text-center" data-activity="Cycling">
             <span class="text-2xl mb-1">🚴</span>
             <span class="text-xs font-semibold">Cycling</span>
-            <span class="text-[9px] text-gray-500 mt-1">-100% CO₂</span>
+            <span class="text-[9px] text-gray-400 mt-1">-100% CO₂</span>
           </div>
           <div class="activity-card glass-card p-3.5 rounded-xl flex flex-col items-center text-center" data-activity="Walking">
             <span class="text-2xl mb-1">🚶</span>
             <span class="text-xs font-semibold">Walking</span>
-            <span class="text-[9px] text-gray-500 mt-1">-100% CO₂</span>
+            <span class="text-[9px] text-gray-400 mt-1">-100% CO₂</span>
           </div>
           <div class="activity-card glass-card p-3.5 rounded-xl flex flex-col items-center text-center" data-activity="Taking a bus">
             <span class="text-2xl mb-1">🚌</span>
             <span class="text-xs font-semibold">Bus Transit</span>
-            <span class="text-[9px] text-gray-500 mt-1">Low CO₂</span>
+            <span class="text-[9px] text-gray-400 mt-1">Low CO₂</span>
           </div>
           <div class="activity-card glass-card p-3.5 rounded-xl flex flex-col items-center text-center" data-activity="Driving a petrol car">
             <span class="text-2xl mb-1">🚗</span>
             <span class="text-xs font-semibold">Petrol Car</span>
-            <span class="text-[9px] text-gray-500 mt-1">High CO₂</span>
+            <span class="text-[9px] text-gray-400 mt-1">High CO₂</span>
           </div>
           <div class="activity-card glass-card p-3.5 rounded-xl flex flex-col items-center text-center" data-activity="Running AC">
             <span class="text-2xl mb-1">⚡</span>
             <span class="text-xs font-semibold">Running AC</span>
-            <span class="text-[9px] text-gray-500 mt-1">High Energy</span>
+            <span class="text-[9px] text-gray-400 mt-1">High Energy</span>
           </div>
           <div class="activity-card glass-card p-3.5 rounded-xl flex flex-col items-center text-center" data-activity="Eating a beef burger">
             <span class="text-2xl mb-1">🍔</span>
             <span class="text-xs font-semibold">Beef Burger</span>
-            <span class="text-[9px] text-gray-500 mt-1">High Food CO₂</span>
+            <span class="text-[9px] text-gray-400 mt-1">High Food CO₂</span>
           </div>
           <!-- Additional 2 Activities for Ecosystem 2.0 -->
           <div class="activity-card glass-card p-3.5 rounded-xl flex flex-col items-center text-center" data-activity="Home Energy">
             <span class="text-2xl mb-1">🏠</span>
             <span class="text-xs font-semibold">Home Energy</span>
-            <span class="text-[9px] text-gray-500 mt-1">Gas/Heating</span>
+            <span class="text-[9px] text-gray-400 mt-1">Gas/Heating</span>
           </div>
           <div class="activity-card glass-card p-3.5 rounded-xl flex flex-col items-center text-center" data-activity="Water Usage">
             <span class="text-2xl mb-1">💧</span>
             <span class="text-xs font-semibold">Water Usage</span>
-            <span class="text-[9px] text-gray-500 mt-1">Shower/Tap</span>
+            <span class="text-[9px] text-gray-400 mt-1">Shower/Tap</span>
           </div>
         </div>
 
         <!-- Hidden inputs form that expands on card select -->
         <form id="activity-form" class="space-y-4">
           <!-- Actual hidden select for form submission -->
+          <label for="activityType" class="sr-only">Select activity type</label>
           <select id="activityType" name="activityType" required class="hidden">
             <option value="" disabled selected>Select activity...</option>
             <option value="Driving a petrol car">Driving a petrol car</option>
@@ -359,6 +378,7 @@
         </div>
 
         <form id="coach-form" class="flex gap-2">
+          <label for="coach-input" class="sr-only">Ask your coach for advice, challenge plans, or swaps</label>
           <input type="text" id="coach-input" class="input-field flex-1 p-3.5 rounded-xl text-sm" placeholder="Ask your coach for advice, challenge plans, or swaps..." required>
           <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold px-5 rounded-xl transition-all flex items-center justify-center" aria-label="Send Message">
             <svg class="w-4 h-4 fill-current rotate-90" viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
@@ -391,7 +411,7 @@
           <div>
             <h3 class="text-xs text-gray-400 font-bold mb-3 uppercase tracking-wider flex items-center justify-between">
               <span>Eco Habit Heatmap</span>
-              <span class="text-[9px] text-gray-500">Commits last 15 days</span>
+              <span class="text-[9px] text-gray-400">Commits last 15 days</span>
             </h3>
             <div class="grid grid-cols-15 gap-1" id="heatmap-grid" aria-label="Eco Commits Grid">
               <!-- Dynamically populated 15-day cells -->
@@ -455,14 +475,14 @@
           <div class="w-full bg-white/5 h-2 rounded-full overflow-hidden">
             <div id="ecosystem-progress-bar" class="bg-emerald-500 h-full rounded-full transition-all duration-500" style="width: 0%;"></div>
           </div>
-          <span class="text-[10px] text-gray-500 block mt-2 text-center" id="next-stage-hint">Unlock Plant Stage at 100 XP</span>
+          <span class="text-[10px] text-gray-400 block mt-2 text-center" id="next-stage-hint">Unlock Plant Stage at 100 XP</span>
         </div>
       </section>
 
       <!-- Carbon Assessment Panel (Visible on Log) -->
-      <section id="results-card" class="glass-card p-6 rounded-3xl hidden opacity-0 transition-opacity duration-300 ease-in-out" aria-live="polite">
+      <section id="results-card" class="glass-card p-6 rounded-3xl hidden opacity-0 transition-opacity duration-300 ease-in-out" aria-live="polite" aria-label="Impact Assessment Results">
         <div class="flex items-center justify-between mb-4">
-          <h2 class="text-xs font-bold text-gray-400 uppercase tracking-widest">Calculated Impact Assessment</h2>
+          <h2 class="text-xs text-gray-400 uppercase tracking-widest">Calculated Impact Assessment</h2>
           
           <button type="button" id="speak-btn" class="p-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/5 text-emerald-400" aria-label="Listen to nudge text" title="Read nudge aloud">
             <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
@@ -508,12 +528,12 @@
           <span>🌱 Carbon Offset Marketplace</span>
           <span class="text-[9px] bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded font-extrabold border border-emerald-500/20">Scalability</span>
         </h3>
-        <p class="text-xs text-gray-500 mb-4">Redeem your hard-earned Eco Points to support verified local NGOs planting real trees.</p>
+        <p class="text-xs text-gray-400 mb-4">Redeem your hard-earned Eco Points to support verified local NGOs planting real trees.</p>
         <div class="space-y-3">
           <div class="bg-white/[0.02] border border-white/5 p-3 rounded-2xl flex items-center justify-between">
             <div class="flex flex-col">
               <span class="text-xs font-bold text-gray-200">Plant a Real Sapling</span>
-              <span class="text-[9px] text-gray-500">Partner: GreenBhopal NGO</span>
+              <span class="text-[9px] text-gray-400">Partner: GreenBhopal NGO</span>
             </div>
             <button type="button" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-[10px] font-bold text-white transition-all uppercase redeem-offset-btn" data-cost="150" data-item="sapling">
               150 XP
@@ -522,7 +542,7 @@
           <div class="bg-white/[0.02] border border-white/5 p-3 rounded-2xl flex items-center justify-between">
             <div class="flex flex-col">
               <span class="text-xs font-bold text-gray-200">10kg CO₂ Offset Certificate</span>
-              <span class="text-[9px] text-gray-500">Direct Air Capture removal</span>
+              <span class="text-[9px] text-gray-400">Direct Air Capture removal</span>
             </div>
             <button type="button" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-[10px] font-bold text-white transition-all uppercase redeem-offset-btn" data-cost="250" data-item="offset">
               250 XP

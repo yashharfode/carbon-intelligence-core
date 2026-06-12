@@ -59,7 +59,8 @@ app.use((req, res, next) => {
 // Error Handling Middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ error: 'Internal Server Error' });
+  const status = err.status || err.statusCode || 500;
+  res.status(status).json({ error: err.message || 'Internal Server Error' });
 });
 
 const PORT = process.env.PORT || 8080;

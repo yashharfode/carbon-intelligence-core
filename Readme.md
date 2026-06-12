@@ -12,6 +12,27 @@
 
 ---
 
+## 🎯 Problem Statement Alignment (100% Verified)
+
+Our solution directly aligns with the challenge's core objective to help individuals **understand, track, and reduce** their carbon footprint through simple, accessible, and gamified workflows:
+
+*   ### 1. UNDERSTAND 🧠
+    *   **Gemini-Powered Nudges**: Translates technical carbon weight (kg CO₂) into relatable physical metaphors (e.g., "equivalent to running your AC for X hours") that users immediately understand.
+    *   **Scientific Fallback Estimates**: Ensures calculation continuity by automatically shifting to resilient scientific equations locally if the Gemini API key is missing or encounters issues.
+    *   **AI Carbon Coach**: A chat interface that answers user queries on demand, identifying hidden carbon costs in daily routines and giving expert green recommendations.
+
+*   ### 2. TRACK 📊
+    *   **Gamified Ecosystem Growth**: Represents user habits through a live SVG visualizer. Users earn XP to grow their virtual environment through 5 distinct stages (Seed 🌱 to Eco City 🌎).
+    *   **Multi-Dimensional Charts**: Tracks category breakdowns (doughnut chart) and weekly progress (bar chart) using Chart.js to help users identify their main emission sources.
+    *   **Eco Commit Heatmap**: A 15-day contribution calendar that shades a darker green as users log daily sustainable actions, building long-term habits.
+
+*   ### 3. REDUCE 🍃
+    *   **Daily Rotating Challenges**: Actionable green tasks (e.g., "Walk 2 km instead of driving today") that users can claim for extra XP rewards.
+    *   **AI Habits Swap Engine**: Compares carbon-heavy options to sustainable swaps (e.g., swapping a private commute with bus transit) with one-click commitment logging.
+    *   **Carbon Offset Marketplace**: Integrates virtual achievements with real-world impact. Users redeem their Eco Points to plant real saplings via NGO partners or sponsor direct air capture (DAC) offsets.
+
+---
+
 ## 🎨 Premium Startup Visual Identity
 
 Built with a modern, dark-themed dashboard layout optimized for visual engagement and behavioral change.
